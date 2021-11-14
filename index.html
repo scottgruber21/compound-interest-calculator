@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto" rel="stylesheet">
+    <title>Compound Interest Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        label {
+            display: block;
+        }
+
+        .warning {
+            display: block;
+        }
+
+        .container {
+            display: block;
+            width: 340px;
+            margin: auto;
+            padding-top: 20px;
+        }
+
+        .container h2 {
+            padding-bottom: 20px;
+        }
+
+        input,
+        #frequency {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid steelblue;
+            font-size: 16px;
+        }
+
+        #frequency,
+        #years {
+            width: 216px;
+        }
+
+        .wrapper input {
+            border: none
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .wrapper:focus {
+            border: 2px solid black;
+        }
+
+        .wrapper {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid steelblue;
+            font-size: 16px;
+        }
+
+        .form-control {
+            padding-bottom: 15px;
+        }
+
+        label,
+        span,
+        #results {
+            font-size: 24px;
+        }
+
+        #results {
+            padding-top: 20px;
+        }
+
+        label {
+            padding-bottom: 5px;
+        }
+
+        .warning {
+            font-size: 12px;
+            color: red;
+        }
+
+        button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: white;
+        }
+
+        #submit {
+            margin-right: 20px;
+            background: steelblue;
+        }
+
+        #clear {
+            background: orangered;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Compund Interest Calculator</h2>
+        <div class="form-control">
+            <label for="capital">Original Amount</label>
+            <span class="wrapper">$<input type="number" id="capital" name="capital"></span>
+            <span class="warning" id="capital-warning"></span>
+        </div>
+        <div class="form-control">
+            <label for="percentage">Interest Rate</label>
+            <span class="wrapper"><input type="number" id="percentage" name="percentage" step="0.1">%</span>
+            <span class="warning" id="percentage-warning"></span>
+        </div>
+        <div class="form-control">
+            <label for="frequency">Interest Frequency</label>
+            <select name="frequency" id="frequency">
+                <option value="yearly">Yearly</option>
+                <option value="semiannually">Semi-Annually</option>
+                <option value="monthly">Monthly</option>
+            </select>
+        </div>
+        <div class="form-control">
+            <label for="years">Length of Time in Years </label>
+            <input type="number" id="years" name="years">
+            <span class="warning" id="years-warning"></span>
+        </div>
+        <button id="submit">Submit</button>
+        <button id="clear">Clear</button>
+        <p id="results"></p>
+    </div>
+
+    <script>
+        let capital = document.querySelector('#capital')
+        let submit = document.querySelector('#submit')
+        let clear = document.querySelector('#clear')
+        let frequency = document.querySelector('#frequency')
+        let years = document.querySelector('#years')
+        let percentageWarning = document.querySelector('#percentage-warning')
+        let capitalWarning = document.querySelector('#capital-warning')
+        let yearsWarning = document.querySelector('#years-warning')
+        let results = document.querySelector('#results')
+
+        function calculate(money, percent, freq, years) {
+            let multiplier = 1
+            if (freq === 'monthly') {
+                multiplier = 12
+            }
+            if (freq == 'semiannually') {
+                multiplier = 2
+            }
+
+            let timesCompounded = multiplier * years
+
+            for (let i = 0; i < timesCompounded; i++) {
+                money += (money * (percent / 100))
+            }
+
+            return money
+        }
+
+        submit.addEventListener('click', () => {
+            let capitalValue = +capital.value
+            let percentageValue = +percentage.value
+            let frequencyValue = frequency.value
+            let yearsValue = +years.value
+            let err = false
+
+            if (!capitalValue || isNaN(capitalValue)) {
+                capitalWarning.innerText = "Please enter a valid number"
+                err = true
+            }
+            if (!percentageValue || isNaN(percentageValue)) {
+                percentageWarning.innerText = "Please enter a valid number"
+                err = true
+            }
+            if (!yearsValue || isNaN(yearsValue)) {
+                yearsWarning.innerText = "Please enter a valid number"
+                err = true
+            }
+            if (!err) {
+                let result = calculate(capitalValue, percentageValue, frequencyValue, yearsValue)
+                console.log(result)
+                results.innerText = `You would have $${(Math.round(result * 100) / 100).toLocaleString("en-us")}`
+            }
+        })
+
+        clear.addEventListener('click', () => {
+            capital.value = ''
+            frequency.value = 'yearly'
+            years.value = ''
+            percentageWarning.innerText = ''
+            capitalWarning.innerText = ''
+            yearsWarning.innerText = ''
+            results.innerText = ''
+            percentage.value = ''
+        })
+    </script>
+</body>
+
+</html>
